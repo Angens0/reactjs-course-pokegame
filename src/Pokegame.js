@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
-import Pokecard from './Pokecard'
-import './Pokedex.css'
+import shuffle from 'fast-shuffle'
+import Pokedex from './Pokedex'
 
-class Pokedex extends Component {
+const getHandExp = deck => deck.reduce((sum, pokemon) => sum + pokemon.base_experience, 0)
+
+class Pokegame extends Component {
     static defaultProps = {
         pokemon: [
             { id: 4, name: 'Charmander', type: 'fire', base_experience: 62 },
@@ -17,25 +19,19 @@ class Pokedex extends Component {
     }
 
     render() {
+        const hand1 = shuffle(this.props.pokemon)
+        const hand2 = hand1.splice(Math.floor(hand1.length / 2))
+        const exp1 = getHandExp(hand1)
+        const exp2 = getHandExp(hand2)
+
         return (
-            <div className="Pokedex">
-                <h1>Pokedex!</h1>
-                <p>Total Experience: ${this.props.exp}</p>
-                <p>{this.props.isWinner ? 'WINNER!' : 'LOSER!'}</p>
-                <div className="Pokedex-cards">
-                    {this.props.pokemon.map(p => (
-                        <Pokecard
-                            key={p.id}
-                            id={p.id}
-                            name={p.name}
-                            type={p.type}
-                            exp={p.base_experience}
-                        />
-                    ))}
-                </div>
+            <div>
+                <h1>Pokegame!</h1>
+                <Pokedex pokemon={hand1} exp={exp1} isWinner={exp1 > exp2} />
+                <Pokedex pokemon={hand2} exp={exp2} isWinner={exp1 < exp2} />
             </div>
         )
     }
 }
 
-export default Pokedex
+export default Pokegame
